@@ -1,0 +1,158 @@
+/* Reset default styles and set font family */
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+/* Neon animated background */
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(-45deg, #ff00cc, #3333ff, #00ffcc, #ff6600);
+  background-size: 400% 400%;
+  animation: neonBackground 12s ease infinite;
+}
+
+@keyframes neonBackground {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Main container styles */
+.box {
+  position: relative;
+  width: 370px;
+  height: 470px;
+  background: #1c1c1c;
+  border-radius: 50px 5px;
+  overflow: hidden;
+  box-shadow: 0 0 20px #45f3ff, 0 0 40px #ff00cc, 0 0 60px #00ffcc;
+}
+
+/* Create animated gradient border effect */
+.box::before,
+.box::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 370px;
+  height: 470px;
+  background: linear-gradient(60deg, transparent, #45f3ff, #45f3ff);
+  transform-origin: bottom right;
+  animation: animate 6s linear infinite;
+}
+
+.box::after {
+  background: linear-gradient(60deg, transparent, #d9138a, #d9138a);
+  animation-delay: -3s;
+}
+
+@keyframes animate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Form container styles */
+form {
+  position: absolute;
+  inset: 2px;
+  background: #28292d;
+  border-radius: 50px 5px;
+  z-index: 10;
+  padding: 30px 30px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Title styles */
+.title h1 {
+  color: #45f3ff;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 600;
+  opacity: 0.9;
+  margin-bottom: 20px;
+}
+
+/* Input box styles */
+.input-box {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.input-box input {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.15);
+  border: none;
+  outline: none;
+  border-radius: 15px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  margin: 10px 0;
+  color: white;
+}
+
+.input-box input::placeholder {
+  color: #cdd1d2;
+}
+
+/* Password container (input + show button) */
+.password-container {
+  position: relative;
+  width: 100%;
+}
+
+.password-container input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.password-container button {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #45f3ff;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+/* Submit button */
+.input-box input[type="submit"] {
+  background-color: #45f3ff;
+  cursor: pointer;
+  color: #16100e;
+  font-weight: bold;
+  filter: drop-shadow(0 5px 10px #45f3ff);
+  margin-top: 15px;
+}
+
+/* Label color */
+.label-color {
+  color: #9eb3b5;
+}
+/* Error message style */
+.error-message {
+  color: #ff4d4d;
+  font-size: 0.9rem;
+  margin-top: 8px;
+  text-align: center;
+}
