@@ -1,12 +1,18 @@
 // app.js - WebSocket client for ESP32 Power Tracker
-function updateDateTime() {
+// ⏰ Live Date + Time (dd/mm/yyyy, 12-hour, with day)
+function updateClock() {
   const now = new Date();
-  const time = now.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true });
+  const day = now.toLocaleDateString("en-GB", { weekday: "long" }); // Monday
   const date = now.toLocaleDateString("en-GB"); // dd/mm/yyyy
-  document.getElementById("dateTime").innerText = `${date} · ${time}`;
+  const time = now.toLocaleTimeString("en-US", { hour12: true }); // 12-hour format
+  document.getElementById("dateTime").innerText = `${day}, ${date} | ${time}`;
 }
-setInterval(updateDateTime, 1000);
-updateDateTime();
+setInterval(updateClock, 1000);
+updateClock();
+
+
+
+
 const WS_PORT = 81;
 const ws = new WebSocket("ws://" + location.hostname + ":" + WS_PORT);
 
@@ -177,16 +183,7 @@ function prependNotif(n){
     const s = await fetch("/settings.json"); if(s.ok){ const js = await s.json(); document.getElementById("price").value = js.unitPrice || 8; }
   } catch(e){ console.warn("Init fetch failed", e); }
 })();
-// ⏰ Live Date + Time (dd/mm/yyyy, 12-hour, with day)
-function updateClock() {
-  const now = new Date();
-  const day = now.toLocaleDateString("en-GB", { weekday: "long" }); // Monday
-  const date = now.toLocaleDateString("en-GB"); // dd/mm/yyyy
-  const time = now.toLocaleTimeString("en-US", { hour12: true }); // 12-hour format
-  document.getElementById("dateTime").innerText = `${day}, ${date} | ${time}`;
-}
-setInterval(updateClock, 1000);
-updateClock();
+
 
 // 🚪 Logout
 function logout() {
