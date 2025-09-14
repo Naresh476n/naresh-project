@@ -184,3 +184,11 @@ updateClock();
 function logout() {
   window.location.href = "index.html"; // redirect to login page
 }
+function updateDateTime() {
+  const now = new Date();
+  const time = now.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true });
+  const date = now.toLocaleDateString("en-GB"); // dd/mm/yyyy
+  document.getElementById("dateTime").innerText = `${date} · ${time}`;
+}
+setInterval(updateDateTime, 1000);
+updateDateTime();
