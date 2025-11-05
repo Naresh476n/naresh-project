@@ -76,12 +76,9 @@ document.getElementById("applyTimer").addEventListener("click", ()=>{
 
 // Limits
 document.getElementById("saveLimits").addEventListener("click", ()=>{
-  const vals = [
-    parseFloat(document.getElementById("limit1").value||"12"),
-    parseFloat(document.getElementById("limit2").value||"12"),
-    parseFloat(document.getElementById("limit3").value||"12"),
-    parseFloat(document.getElementById("limit4").value||"12"),
-  ];
+  const vals = [1, 2, 3, 4].map(i => 
+    parseFloat(document.getElementById("limit" + i).value || "12")
+  );
   vals.forEach((h,i)=>{
     const sec = Math.max(1, Math.round(h*3600));
     ws.send(JSON.stringify({cmd:"setLimit", id:i+1, seconds:sec}));
