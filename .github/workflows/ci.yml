@@ -29,14 +29,12 @@ jobs:
     - name: Validate HTML files
       run: |
         echo "Validating HTML files..."
-        html5validator --root . --match "*.html" --show-warnings || {
-          echo "Note: HTML validation found issues but continuing..."
-          echo "HTML files checked for basic structure"
-        }
-        # Fallback basic validation
+        # Run html5validator - it shows warnings but doesn't fail on them
+        html5validator --root . --match "*.html" --show-warnings --log INFO
+        # Additional basic structure validation
         for file in *.html; do
           if [ -f "$file" ]; then
-            echo "Checking $file..."
+            echo "Checking $file basic structure..."
             if ! grep -q "<!DOCTYPE" "$file"; then
               echo "Warning: $file missing DOCTYPE declaration"
             fi
@@ -51,6 +49,7 @@ jobs:
             echo "$file basic structure is valid"
           fi
         done
+        echo "HTML validation completed"
         
     - name: Validate CSS files
       run: |
