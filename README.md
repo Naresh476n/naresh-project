@@ -46,13 +46,17 @@ The application uses:
 - Chart.js for data visualization
 - jsPDF for PDF generation
 
-## Valid Login Credentials
+## Demo Login Credentials
+
+The following credentials are hardcoded in the client-side code for demonstration purposes:
 
 - naresh@gmail.com / 12345678
 - sanjai@gmail.com / 12345678
 - mouli@gmail.com / 12345678
 - nivas@gmail.com / 12345678
 - shathi@gmail.com / 12345678
+
+⚠️ **Note**: These credentials are visible in the client-side JavaScript and are for demonstration only. For production use, implement proper backend authentication.
 
 ## License
 

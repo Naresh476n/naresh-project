@@ -20,13 +20,20 @@ jobs:
       with:
         node-version: '20'
         
+    - name: Install HTML validator
+      run: pip install html5validator
+        
     - name: Validate HTML files
       run: |
         echo "Validating HTML files..."
+        html5validator --root . --match "*.html" --show-warnings || {
+          echo "Note: HTML validation found issues but continuing..."
+          echo "HTML files checked for basic structure"
+        }
+        # Fallback basic validation
         for file in *.html; do
           if [ -f "$file" ]; then
             echo "Checking $file..."
-            # Basic HTML validation - check for required tags
             if ! grep -q "<!DOCTYPE" "$file"; then
               echo "Warning: $file missing DOCTYPE declaration"
             fi
@@ -38,7 +45,7 @@ jobs:
               echo "Error: $file missing </html> closing tag"
               exit 1
             fi
-            echo "$file is valid"
+            echo "$file basic structure is valid"
           fi
         done
         
@@ -48,9 +55,15 @@ jobs:
         for file in *.css; do
           if [ -f "$file" ]; then
             echo "Checking $file..."
-            # Basic CSS validation - check for syntax errors
-            if ! grep -q "{" "$file"; then
+            # Basic CSS validation - check for basic syntax
+            if grep -q "[{}]" "$file"; then
+              echo "$file contains CSS rules"
+            else
               echo "Warning: $file may not contain valid CSS rules"
+            fi
+            # Check file is not empty
+            if [ ! -s "$file" ]; then
+              echo "Warning: $file is empty"
             fi
             echo "$file checked"
           fi
