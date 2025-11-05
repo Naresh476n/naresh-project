@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    name: Validate Code
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        
+    - name: Validate HTML files
+      run: |
+        echo "Validating HTML files..."
+        for file in *.html; do
+          if [ -f "$file" ]; then
+            echo "Checking $file..."
+            # Basic HTML validation - check for required tags
+            if ! grep -q "<!DOCTYPE" "$file"; then
+              echo "Warning: $file missing DOCTYPE declaration"
+            fi
+            if ! grep -q "<html" "$file"; then
+              echo "Error: $file missing <html> tag"
+              exit 1
+            fi
+            if ! grep -q "</html>" "$file"; then
+              echo "Error: $file missing </html> closing tag"
+              exit 1
+            fi
+            echo "$file is valid"
+          fi
+        done
+        
+    - name: Validate CSS files
+      run: |
+        echo "Validating CSS files..."
+        for file in *.css; do
+          if [ -f "$file" ]; then
+            echo "Checking $file..."
+            # Basic CSS validation - check for syntax errors
+            if ! grep -q "{" "$file"; then
+              echo "Warning: $file may not contain valid CSS rules"
+            fi
+            echo "$file checked"
+          fi
+        done
+        
+    - name: Validate JavaScript files
+      run: |
+        echo "Validating JavaScript files..."
+        for file in *.js; do
+          if [ -f "$file" ]; then
+            echo "Checking $file..."
+            # Check for basic syntax
+            node --check "$file" || {
+              echo "Error: $file has syntax errors"
+              exit 1
+            }
+            echo "$file is valid"
+          fi
+        done
+        
+    - name: Build summary
+      run: |
+        echo "### Validation Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "✅ All files validated successfully" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Files checked:**" >> $GITHUB_STEP_SUMMARY
+        echo "- HTML files: $(ls -1 *.html 2>/dev/null | wc -l)" >> $GITHUB_STEP_SUMMARY
+        echo "- CSS files: $(ls -1 *.css 2>/dev/null | wc -l)" >> $GITHUB_STEP_SUMMARY
+        echo "- JavaScript files: $(ls -1 *.js 2>/dev/null | wc -l)" >> $GITHUB_STEP_SUMMARY
