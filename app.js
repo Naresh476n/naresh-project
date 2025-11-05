@@ -2,7 +2,8 @@
 
 // Helper functions for formatting
 function formatValue(value, decimals, unit) {
-  return Number(value || 0).toFixed(decimals) + " " + unit;
+  const safeDec = Math.max(0, Math.floor(decimals)) || 0;
+  return Number(value || 0).toFixed(safeDec) + " " + unit;
 }
 
 function createNotificationElement(notification) {
@@ -12,9 +13,10 @@ function createNotificationElement(notification) {
   return li;
 }
 
-function createTile(id, title, isTotal = false) {
+function createTile(title, id = null) {
   const tile = document.createElement("div");
   tile.className = "tile";
+  const isTotal = id === null;
   tile.id = isTotal ? "tileTotal" : "tile" + id;
   const suffix = isTotal ? "t" : id;
   tile.innerHTML = `
@@ -50,11 +52,11 @@ document.getElementById('ip').innerText = location.hostname;
 // Build live tiles
 const liveDiv = document.getElementById("live");
 for (let i = 1; i <= 4; i++) {
-  liveDiv.appendChild(createTile(i, `Load ${i}`));
+  liveDiv.appendChild(createTile(`Load ${i}`, i));
 }
 
 // ✅ Add Total Power Usage card
-liveDiv.appendChild(createTile(null, "Total Power Usage", true));
+liveDiv.appendChild(createTile("Total Power Usage"));
 
 // Relay switches
 for (let i=1;i<=4;i++){
