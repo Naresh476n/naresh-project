@@ -2,6 +2,7 @@
 
 // Helper functions for formatting
 function formatValue(value, decimals, unit) {
+  if (typeof unit !== 'string') throw new Error('Unit must be a string');
   const safeDec = Math.max(0, Math.floor(decimals)) || 0;
   return Number(value || 0).toFixed(safeDec) + " " + unit;
 }
@@ -25,7 +26,7 @@ function createTile(title, id = null) {
     <div class="kv"><span>Current:</span><span id="c${suffix}">0 A</span></div>
     <div class="kv"><span>Power:</span><span id="p${suffix}">0 W</span></div>
     <div class="kv"><span>Energy:</span><span id="e${suffix}">0 Wh</span></div>
-    ${!isTotal ? '<div class="kv"><span>State:</span><span id="s' + id + '">OFF</span></div>' : ''}
+    ${!isTotal ? `<div class="kv"><span>State:</span><span id="s${id}">OFF</span></div>` : ''}
   `;
   return tile;
 }
