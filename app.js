@@ -1,4 +1,33 @@
 // app.js - WebSocket client for ESP32 Power Tracker
+
+// Helper functions for formatting
+function formatValue(value, decimals, unit) {
+  return Number(value || 0).toFixed(decimals) + " " + unit;
+}
+
+function createNotificationElement(notification) {
+  const li = document.createElement("li");
+  const dt = new Date((notification.ts || 0) * 1000).toLocaleString();
+  li.textContent = dt + " — " + (notification.text || notification);
+  return li;
+}
+
+function createTile(id, title, isTotal = false) {
+  const tile = document.createElement("div");
+  tile.className = "tile";
+  tile.id = isTotal ? "tileTotal" : "tile" + id;
+  const suffix = isTotal ? "t" : id;
+  tile.innerHTML = `
+    <h4>${title}</h4>
+    <div class="kv"><span>Voltage:</span><span id="v${suffix}">0 V</span></div>
+    <div class="kv"><span>Current:</span><span id="c${suffix}">0 A</span></div>
+    <div class="kv"><span>Power:</span><span id="p${suffix}">0 W</span></div>
+    <div class="kv"><span>Energy:</span><span id="e${suffix}">0 Wh</span></div>
+    ${!isTotal ? '<div class="kv"><span>State:</span><span id="s' + id + '">OFF</span></div>' : ''}
+  `;
+  return tile;
+}
+
 // ⏰ Live Date + Time (dd/mm/yyyy, 12-hour, with day)
 function updateClock() {
   const now = new Date();
@@ -21,32 +50,11 @@ document.getElementById('ip').innerText = location.hostname;
 // Build live tiles
 const liveDiv = document.getElementById("live");
 for (let i = 1; i <= 4; i++) {
-  const tile = document.createElement("div");
-  tile.className = "tile";
-  tile.id = "tile"+i;
-  tile.innerHTML = `
-    <h4>Load ${i}</h4>
-    <div class="kv"><span>Voltage:</span><span id="v${i}">0 V</span></div>
-    <div class="kv"><span>Current:</span><span id="c${i}">0 A</span></div>
-    <div class="kv"><span>Power:</span><span id="p${i}">0 W</span></div>
-    <div class="kv"><span>Energy:</span><span id="e${i}">0 Wh</span></div>
-    <div class="kv"><span>State:</span><span id="s${i}">OFF</span></div>
-  `;
-  liveDiv.appendChild(tile);
+  liveDiv.appendChild(createTile(i, `Load ${i}`));
 }
 
 // ✅ Add Total Power Usage card
-const totalTile = document.createElement("div");
-totalTile.className = "tile";
-totalTile.id = "tileTotal";
-totalTile.innerHTML = `
-  <h4>Total Power Usage</h4>
-  <div class="kv"><span>Voltage:</span><span id="vt">0 V</span></div>
-  <div class="kv"><span>Current:</span><span id="ct">0 A</span></div>
-  <div class="kv"><span>Power:</span><span id="pt">0 W</span></div>
-  <div class="kv"><span>Energy:</span><span id="et">0 Wh</span></div>
-`;
-liveDiv.appendChild(totalTile);
+liveDiv.appendChild(createTile(null, "Total Power Usage", true));
 
 // Relay switches
 for (let i=1;i<=4;i++){
@@ -130,10 +138,10 @@ ws.onmessage = (evt)=>{
       let totalV=0,totalC=0,totalP=0,totalE=0;
       data.loads.forEach((L)=>{
         const i = L.id;
-        document.getElementById("v"+i).innerText = Number(L.voltage||0).toFixed(2)+" V";
-        document.getElementById("c"+i).innerText = Number(L.current||0).toFixed(3)+" A";
-        document.getElementById("p"+i).innerText = Number(L.power||0).toFixed(2)+" W";
-        document.getElementById("e"+i).innerText = Number(L.energy||0).toFixed(2)+" Wh";
+        document.getElementById("v"+i).innerText = formatValue(L.voltage, 2, "V");
+        document.getElementById("c"+i).innerText = formatValue(L.current, 3, "A");
+        document.getElementById("p"+i).innerText = formatValue(L.power, 2, "W");
+        document.getElementById("e"+i).innerText = formatValue(L.energy, 2, "Wh");
         document.getElementById("s"+i).innerText = L.relay ? "ON" : "OFF";
         document.getElementById("relay"+i).checked = !!L.relay;
 
@@ -143,10 +151,10 @@ ws.onmessage = (evt)=>{
         totalE += Number(L.energy||0);
       });
       // update total card
-      document.getElementById("vt").innerText = totalV.toFixed(2)+" V";
-      document.getElementById("ct").innerText = totalC.toFixed(3)+" A";
-      document.getElementById("pt").innerText = totalP.toFixed(2)+" W";
-      document.getElementById("et").innerText = totalE.toFixed(2)+" Wh";
+      document.getElementById("vt").innerText = formatValue(totalV, 2, "V");
+      document.getElementById("ct").innerText = formatValue(totalC, 3, "A");
+      document.getElementById("pt").innerText = formatValue(totalP, 2, "W");
+      document.getElementById("et").innerText = formatValue(totalE, 2, "Wh");
 
       if(data.unitPrice) document.getElementById("price").value = data.unitPrice;
     } else if(data.type === "notification"){
@@ -161,19 +169,11 @@ ws.onmessage = (evt)=>{
 function showNotifs(arr){
   const ul = document.getElementById("notifs");
   ul.innerHTML = "";
-  arr.reverse().forEach(n=>{
-    const li = document.createElement("li");
-    const dt = new Date((n.ts||0)*1000).toLocaleString();
-    li.textContent = dt + " — " + (n.text||n);
-    ul.appendChild(li);
-  });
+  arr.reverse().forEach(n => ul.appendChild(createNotificationElement(n)));
 }
 function prependNotif(n){
   const ul = document.getElementById("notifs");
-  const li = document.createElement("li");
-  const dt = new Date((n.ts||0)*1000).toLocaleString();
-  li.textContent = dt + " — " + (n.text||n);
-  ul.insertBefore(li, ul.firstChild);
+  ul.insertBefore(createNotificationElement(n), ul.firstChild);
 }
 
 // Initial load of notifs and settings
