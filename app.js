@@ -1,4 +1,5 @@
 // app.js - WebSocket client for ESP32 Power Tracker
+// Developed by autodevcrew
 // ⏰ Live Date + Time (dd/mm/yyyy, 12-hour, with day)
 function updateClock() {
   const now = new Date();
