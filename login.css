@@ -156,3 +156,15 @@ form {
   margin-top: 8px;
   text-align: center;
 }
+
+/* Footer style */
+.login-footer {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  color: #45f3ff;
+  font-size: 12px;
+  opacity: 0.8;
+}
